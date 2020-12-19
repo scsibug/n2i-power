@@ -1,8 +1,11 @@
 # builder image
-FROM rust:1.48 as builder
+FROM rust:latest as builder
+RUN apt-get update
+RUN apt-get install musl-tools -y
+RUN rustup target add x86_64-unknown-linux-musl
 WORKDIR /usr/src/n2i-power
 COPY . .
-RUN cargo install --path .
+RUN RUSTFLAGS=-Clinker=musl-gcc cargo install --path . --target=x86_64-unknown-linux-musl
 
 # generate clean, final image for end users
 FROM alpine:latest
