@@ -6,7 +6,11 @@ COPY . .
 RUN cargo install --path .
 
 # generate clean, final image for end users
-FROM busybox:glibc
+FROM debian:stable-slim
+RUN apt-get update && \
+        apt-get install -y libssl-dev && \
+        rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /usr/src/n2i-power/target/release/n2i-power .
 
 # executable
