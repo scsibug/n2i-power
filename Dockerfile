@@ -1,14 +1,12 @@
 # builder image
 FROM rust:latest as builder
 RUN apt-get update
-RUN apt-get install musl-tools -y
-RUN rustup target add x86_64-unknown-linux-musl
 WORKDIR /usr/src/n2i-power
 COPY . .
-RUN RUSTFLAGS=-Clinker=musl-gcc cargo install --path . --target=x86_64-unknown-linux-musl
+RUN cargo install --path .
 
 # generate clean, final image for end users
-FROM alpine:latest
+FROM busybox:glibc
 COPY --from=builder /usr/src/n2i-power/target/release/n2i-power .
 
 # executable
